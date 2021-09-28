@@ -31,18 +31,8 @@ exports.Register = async (req, res) => {
       return res.status(404).json({ message: STRINGS.ERRORS.userExists });
 
     let uploadedPicture;
-    if (req.files && req.files.image) {
-      if (
-        req.files.image[0].mimetype == "image/jpeg" ||
-        req.files.image[0].mimetype == "image/jpg" ||
-        req.files.image[0].mimetype == "image/png"
-      ) {
-        uploadedPicture = req.files.image[0].filename;
-      } else {
-        return res
-          .status(401)
-          .json({ message: STRINGS.ERRORS.allowedImagesType });
-      }
+    if (req.file) {
+      uploadedPicture = req.file.filename;
     } else {
       return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
@@ -97,21 +87,9 @@ exports.updateProfile = async (req, res) => {
   try {
     const data = req.body;
     let userId = req.params.id;
-    let uploadedPicture;
-    if (req.files && req.files.image) {
-      if (
-        req.files.image[0].mimetype == "image/jpeg" ||
-        req.files.image[0].mimetype == "image/jpg" ||
-        req.files.image[0].mimetype == "image/png"
-      ) {
-        uploadedPicture = req.files.image[0].filename;
-      } else {
-        return res
-          .status(401)
-          .json({ message: STRINGS.ERRORS.allowedImagesType });
-      }
-    } else {
-      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
+    let uploadedPicture = data.image;
+    if (req.file && req.file) {
+      uploadedPicture = req.file.filename;
     }
     let user = await User.findOneAndUpdate(
       {

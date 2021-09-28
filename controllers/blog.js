@@ -25,7 +25,7 @@ const populateQuery = [
 exports.getSingleBlog = async (req, res) => {
   try {
     let BlogId = req.params.id;
-    let blog = await Blog.findOne({ _id: BlogId }).populate(populateQuery); // Check if Blog exist
+    let blog = await Blog.findOne({ _id: BlogId }); // Check if Blog exist
     if (!blog)
       return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
 
@@ -56,18 +56,8 @@ exports.createBlog = async (req, res) => {
     let { title, description } = req.body; //req body
 
     let uploadedPicture;
-    if (req.files && req.files.image) {
-      if (
-        req.files.image[0].mimetype == "image/jpeg" ||
-        req.files.image[0].mimetype == "image/jpg" ||
-        req.files.image[0].mimetype == "image/png"
-      ) {
-        uploadedPicture = req.files.image[0].filename;
-      } else {
-        return res
-          .status(401)
-          .json({ message: STRINGS.ERRORS.allowedImagesType });
-      }
+    if (req.file) {
+      uploadedPicture = req.file.filename;
     } else {
       return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
@@ -106,21 +96,9 @@ exports.updateBlog = async (req, res) => {
     let blog = await Blog.findOne({ _id: BlogId }); // Check if Blog exist
     if (!blog)
       return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
-    let uploadedPicture;
-    if (req.files && req.files.image) {
-      if (
-        req.files.image[0].mimetype == "image/jpeg" ||
-        req.files.image[0].mimetype == "image/jpg" ||
-        req.files.image[0].mimetype == "image/png"
-      ) {
-        uploadedPicture = req.files.image[0].filename;
-      } else {
-        return res
-          .status(401)
-          .json({ message: STRINGS.ERRORS.allowedImagesType });
-      }
-    } else {
-      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
+    let uploadedPicture = data.image;
+    if (req.file && req.file.image) {
+      uploadedPicture = req.file.filename;
     }
     let newBlog = await Blog.findOneAndUpdate(
       //update Blog

@@ -25,9 +25,7 @@ const populateQuery = [
 exports.getSingleProject = async (req, res) => {
   try {
     let ProjectId = req.params.id;
-    let project = await Project.findOne({ _id: ProjectId }).populate(
-      populateQuery
-    ); // Check if Project exist
+    let project = await Project.findOne({ _id: ProjectId }); // Check if Project exist
     if (!project)
       return res.status(404).send({ message: STRINGS.ERRORS.ProjectNotFound });
 
@@ -60,18 +58,8 @@ exports.createProject = async (req, res) => {
     let userId = req.user.id;
     let { title, description } = req.body; //req body
     let uploadedPicture;
-    if (req.files && req.files.image) {
-      if (
-        req.files.image[0].mimetype == "image/jpeg" ||
-        req.files.image[0].mimetype == "image/jpg" ||
-        req.files.image[0].mimetype == "image/png"
-      ) {
-        uploadedPicture = req.files.image[0].filename;
-      } else {
-        return res
-          .status(401)
-          .json({ message: STRINGS.ERRORS.allowedImagesType });
-      }
+    if (req.file) {
+      uploadedPicture = req.file.filename;
     } else {
       return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
@@ -112,21 +100,9 @@ exports.updateProject = async (req, res) => {
     let project = await Project.findOne({ _id: ProjectId }); // Check if Project exist
     if (!project)
       return res.status(404).send({ message: STRINGS.ERRORS.ProjectNotFound });
-    let uploadedPicture;
-    if (req.files && req.files.image) {
-      if (
-        req.files.image[0].mimetype == "image/jpeg" ||
-        req.files.image[0].mimetype == "image/jpg" ||
-        req.files.image[0].mimetype == "image/png"
-      ) {
-        uploadedPicture = req.files.image[0].filename;
-      } else {
-        return res
-          .status(401)
-          .json({ message: STRINGS.ERRORS.allowedImagesType });
-      }
-    } else {
-      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
+    let uploadedPicture = data.image;
+    if (req.file) {
+      uploadedPicture = req.file.filename;
     }
     let newProject = await Project.findOneAndUpdate(
       //update Project
