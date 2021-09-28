@@ -20,6 +20,10 @@ const userSchema = new Schema({
     type: String,
     trim: true,
   },
+  image: {
+    type: String,
+    trim: true,
+  },
   Blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,

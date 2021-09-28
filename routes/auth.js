@@ -18,10 +18,11 @@ const {
   updatePasswordValidator,
 } = require("../middleware/validators");
 const auth = require("../middleware/auth");
+const { upload } = require("../middleware/multer");
 
 // Routes
 // register user
-router.post("/register", registerUserValidator, isValidated, Register);
+router.post("/register", upload, registerUserValidator, isValidated, Register);
 // login user
 router.post("/login", loginUserValidator, isValidated, Login);
 
@@ -38,6 +39,8 @@ router.post(
 // update profile
 router.put(
   "/update/:id",
+  upload,
+
   auth(),
   updateProfileValidator,
   isValidated,

@@ -26,14 +26,38 @@ const populateQuery = [
 // register user
 exports.Register = async (req, res) => {
   try {
-    const data = req.body;
-    let user = await User.findOne({ email: data.email }); // check if user already exists
+    let { firstName, lastName, email, password } = req.body; //req body
+    let user = await User.findOne({ email: email }); // check if user already exists
     if (user)
       return res.status(404).json({ message: STRINGS.ERRORS.userExists });
 
-    const hash = await bcrypt.hash(data.password, +ENV.BCRYPT_SALT); // hashing password
-    data.password = hash;
-    user = await new User(data).save(); //user saved
+    let uploadedPicture;
+    if (req.files && req.files.image) {
+      if (
+        req.files.image[0].mimetype == "image/jpeg" ||
+        req.files.image[0].mimetype == "image/jpg" ||
+        req.files.image[0].mimetype == "image/png"
+      ) {
+        uploadedPicture = req.files.image[0].filename;
+      } else {
+        return res
+          .status(401)
+          .json({ message: STRINGS.ERRORS.allowedImagesType });
+      }
+    } else {
+      return res.status(404).json({ message: STRINGS.ERRORS.imageRequired });
+    }
+
+    const hash = await bcrypt.hash(password, +ENV.BCRYPT_SALT); // hashing password
+    user = await new User({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: hash,
+      image: uploadedPicture,
+    });
+    await user.save(); //create new User
+
     res.json({ message: STRINGS.TEXTS.userCreated });
   } catch (error) {
     console.log(error.message, "error.message");
@@ -140,6 +164,22 @@ exports.updateProfile = async (req, res) => {
   try {
     const data = req.body;
     let userId = req.params.id;
+    let uploadedPicture;
+    if (req.files && req.files.image) {
+      if (
+        req.files.image[0].mimetype == "image/jpeg" ||
+        req.files.image[0].mimetype == "image/jpg" ||
+        req.files.image[0].mimetype == "image/png"
+      ) {
+        uploadedPicture = req.files.image[0].filename;
+      } else {
+        return res
+          .status(401)
+          .json({ message: STRINGS.ERRORS.allowedImagesType });
+      }
+    } else {
+      return res.status(404).json({ message: STRINGS.ERRORS.imageRequired });
+    }
     let user = await User.findOneAndUpdate(
       {
         _id: userId,
@@ -149,6 +189,7 @@ exports.updateProfile = async (req, res) => {
           email: data.email,
           firstName: data.firstName,
           lastName: data.lastName,
+          image: uploadedPicture,
         },
       },
       {
