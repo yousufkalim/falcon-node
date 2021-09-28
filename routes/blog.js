@@ -13,7 +13,10 @@ const {
 } = require("../middleware/validators");
 const auth = require("../middleware/auth");
 const { upload } = require("../middleware/multer");
-
+// get single Blog
+router.get("/:id", auth(), getSingleBlog);
+// get All Blogs By User
+router.get("/", auth(), getAllBlogsByUser);
 // create Blog
 router.post(
   "/create",
@@ -32,10 +35,6 @@ router.put(
   isValidated,
   updateBlog
 );
-// get single Blog
-router.get("/:id", auth(), getSingleBlog);
-// get All Blogs By User
-router.get("/", auth(), getAllBlogsByUser);
 // delete Blog By User
 router.delete("/:id", auth(), deleteBlogByUser);
 // Export

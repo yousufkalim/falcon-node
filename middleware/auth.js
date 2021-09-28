@@ -14,14 +14,18 @@ function auth() {
     const header = req.get("Authorization");
 
     if (!header || !header.startsWith("Bearer")) {
-      return res.send({ message: "Unauthorized access: Token not found" });
+      return res
+        .status(404)
+        .send({ message: "Unauthorized access: Token not found" });
     }
     const token = header.split(" ")[1];
     const decoded = JWT.verify(token, process.env.JWT_SECRET);
 
     let user = await User.findOne({ _id: decoded.id });
     if (!user)
-      return res.send({ message: "Unauthorized access: User does not exist" });
+      return res
+        .status(401)
+        .send({ message: "Unauthorized access: User does not exist" });
 
     req.user = user;
     req.userId = user._id;

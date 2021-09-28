@@ -20,8 +20,36 @@ const populateQuery = [
   },
 ];
 
-//create Blog
+//get single Blog
 
+exports.getSingleBlog = async (req, res) => {
+  try {
+    let BlogId = req.params.id;
+    let blog = await Blog.findOne({ _id: BlogId }).populate(populateQuery); // Check if Blog exist
+    if (!blog)
+      return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
+
+    return res.json({ message: STRINGS.TEXTS.BlogFetched, Blog });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//get all Blogs by user
+
+exports.getAllBlogsByUser = async (req, res) => {
+  try {
+    let userId = req.user.id;
+    let user = await User.findById({ _id: userId }).populate(populateQuery); // Check if user exist
+    if (!user)
+      return res.status(404).send({ message: STRINGS.ERRORS.userNotFound });
+    return res.json({ message: STRINGS.TEXTS.BlogFetched, user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//create Blog
 exports.createBlog = async (req, res) => {
   try {
     let userId = req.user.id;
@@ -41,7 +69,7 @@ exports.createBlog = async (req, res) => {
           .json({ message: STRINGS.ERRORS.allowedImagesType });
       }
     } else {
-      return res.status(404).json({ message: STRINGS.ERRORS.imageRequired });
+      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
     let newBlog = await new Blog({
       title: title,
@@ -77,7 +105,7 @@ exports.updateBlog = async (req, res) => {
 
     let blog = await Blog.findOne({ _id: BlogId }); // Check if Blog exist
     if (!blog)
-      return res.status(400).send({ message: STRINGS.ERRORS.BlogNotFound });
+      return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
     let uploadedPicture;
     if (req.files && req.files.image) {
       if (
@@ -88,11 +116,11 @@ exports.updateBlog = async (req, res) => {
         uploadedPicture = req.files.image[0].filename;
       } else {
         return res
-          .status(404)
+          .status(401)
           .json({ message: STRINGS.ERRORS.allowedImagesType });
       }
     } else {
-      return res.status(404).json({ message: STRINGS.ERRORS.imageRequired });
+      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
     let newBlog = await Blog.findOneAndUpdate(
       //update Blog
@@ -116,34 +144,6 @@ exports.updateBlog = async (req, res) => {
   }
 };
 
-//get single Blog
-
-exports.getSingleBlog = async (req, res) => {
-  try {
-    let BlogId = req.params.id;
-    let blog = await Blog.findOne({ _id: BlogId }).populate(populateQuery); // Check if Blog exist
-    if (!blog)
-      return res.status(400).send({ message: STRINGS.ERRORS.BlogNotFound });
-
-    return res.json({ message: STRINGS.TEXTS.BlogFetched, Blog });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-//get all Blogs by user
-
-exports.getAllBlogsByUser = async (req, res) => {
-  try {
-    let userId = req.user.id;
-    let user = await User.findById({ _id: userId }).populate(populateQuery); // Check if user exist
-    if (!user)
-      return res.status(400).send({ message: STRINGS.ERRORS.userNotFound });
-    return res.json({ message: STRINGS.TEXTS.BlogFetched, user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 //delete single Blog
 
 exports.deleteBlogByUser = async (req, res) => {
@@ -153,7 +153,7 @@ exports.deleteBlogByUser = async (req, res) => {
 
     let blog = await Blog.findOne({ _id: BlogId }); // Check if Blog exist
     if (!blog)
-      return res.status(400).send({ message: STRINGS.ERRORS.BlogNotFound });
+      return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
     await User.findOneAndUpdate(
       //remove Blog from user
       {

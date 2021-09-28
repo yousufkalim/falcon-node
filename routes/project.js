@@ -14,6 +14,10 @@ const {
 const auth = require("../middleware/auth");
 const { upload } = require("../middleware/multer");
 
+// get single Project
+router.get("/:id", auth(), getSingleProject);
+// get All Projects By User
+router.get("/", auth(), getAllProjectsByUser);
 // create Project
 router.post(
   "/create",
@@ -32,10 +36,7 @@ router.put(
   isValidated,
   updateProject
 );
-// get single Project
-router.get("/:id", auth(), getSingleProject);
-// get All Projects By User
-router.get("/", auth(), getAllProjectsByUser);
+
 // delete Project By User
 router.delete("/:id", auth(), deleteProjectByUser);
 // Export

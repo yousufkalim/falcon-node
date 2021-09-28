@@ -41,70 +41,13 @@ exports.loginUserValidator = [
     .withMessage("min length must be 6 characters"),
 ];
 
-// forgot password Validation
-exports.forgotPasswordValidator = [
-  check("email", "Email is required.").notEmpty().isEmail().trim(),
-];
-// logout password Validation
-exports.logoutValidator = [
-  check("device_id", "Device Id is required.").notEmpty(),
-  check("user_id", "Device Id is required.").notEmpty(),
-];
 // update profile Validation
 exports.updateProfileValidator = [
   check("email", "Email is required.").notEmpty().isEmail().trim(),
   check("firstName", "firstName is required.").notEmpty().trim(),
   check("lastName", "lastName is required.").notEmpty().trim(),
 ];
-// reset password Validation
-exports.resetPasswordValidator = [
-  check("resetPasswordToken", "resetPasswordToken is required.")
-    .notEmpty()
-    .trim(),
-  check("password", "Password is required.")
-    .notEmpty()
-    .trim()
-    .isLength({ min: 6 })
-    .withMessage("Password min length must be 6 characters"),
-  check("confirm_password", "Confirm Password is required")
-    .notEmpty()
-    .trim()
-    .isLength({ min: 4 })
-    .withMessage("Confirm Password min length must be 6 characters")
-    .custom(async (confirmPassword, { req }) => {
-      const password = req.body.password;
 
-      if (password !== confirmPassword) {
-        throw new Error("Password and Confirm Password must be same");
-      }
-    }),
-];
-
-// update password Validation
-exports.updatePasswordValidator = [
-  check("old_password", "Old Password is required.")
-    .notEmpty()
-    .trim()
-    .isLength({ min: 6 })
-    .withMessage("Old Password min length must be 6 characters"),
-  check("new_password", "New Password is required.")
-    .notEmpty()
-    .trim()
-    .isLength({ min: 6 })
-    .withMessage("New Password min length must be 6 characters"),
-  check("confirm_password", "Confirm Password is required")
-    .notEmpty()
-    .trim()
-    .isLength({ min: 4 })
-    .withMessage("Confirm Password min length must be 6 characters")
-    .custom(async (confirmPassword, { req }) => {
-      const password = req.body.new_password;
-
-      if (password !== confirmPassword) {
-        throw new Error("Password and Confirm Password must be same");
-      }
-    }),
-];
 // create Blog  Validation
 exports.createBlogValidator = [
   check("title", "title is required.").notEmpty().trim(),

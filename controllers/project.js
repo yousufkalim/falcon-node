@@ -20,6 +20,39 @@ const populateQuery = [
   },
 ];
 
+//get single Project
+
+exports.getSingleProject = async (req, res) => {
+  try {
+    let ProjectId = req.params.id;
+    let project = await Project.findOne({ _id: ProjectId }).populate(
+      populateQuery
+    ); // Check if Project exist
+    if (!project)
+      return res.status(404).send({ message: STRINGS.ERRORS.ProjectNotFound });
+
+    return res.json({ message: STRINGS.TEXTS.ProjectFetched, Project });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//get all Projects by user
+
+exports.getAllProjectsByUser = async (req, res) => {
+  try {
+    let userId = req.user.id;
+    let user = await User.findById({ _id: userId }).populate(populateQuery); // Check if user exist
+    if (!user)
+      return res.status(404).send({ message: STRINGS.ERRORS.userNotFound });
+    return res.json({ message: STRINGS.TEXTS.ProjectFetched, user });
+  } catch (error) {
+    console.log("Error------>", error);
+
+    res.status(500).json({ message: error.message });
+  }
+};
+
 //create createProject
 
 exports.createProject = async (req, res) => {
@@ -36,11 +69,11 @@ exports.createProject = async (req, res) => {
         uploadedPicture = req.files.image[0].filename;
       } else {
         return res
-          .status(404)
+          .status(401)
           .json({ message: STRINGS.ERRORS.allowedImagesType });
       }
     } else {
-      return res.status(404).json({ message: STRINGS.ERRORS.imageRequired });
+      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
     let newProject = await new Project({
       title: title,
@@ -64,6 +97,8 @@ exports.createProject = async (req, res) => {
     ).populate(populateQuery);
     res.json({ message: STRINGS.TEXTS.ProjectCreated, newProject });
   } catch (error) {
+    console.log("Error------>", error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -76,7 +111,7 @@ exports.updateProject = async (req, res) => {
 
     let project = await Project.findOne({ _id: ProjectId }); // Check if Project exist
     if (!project)
-      return res.status(400).send({ message: STRINGS.ERRORS.ProjectNotFound });
+      return res.status(404).send({ message: STRINGS.ERRORS.ProjectNotFound });
     let uploadedPicture;
     if (req.files && req.files.image) {
       if (
@@ -87,11 +122,11 @@ exports.updateProject = async (req, res) => {
         uploadedPicture = req.files.image[0].filename;
       } else {
         return res
-          .status(404)
+          .status(401)
           .json({ message: STRINGS.ERRORS.allowedImagesType });
       }
     } else {
-      return res.status(404).json({ message: STRINGS.ERRORS.imageRequired });
+      return res.status(400).json({ message: STRINGS.ERRORS.imageRequired });
     }
     let newProject = await Project.findOneAndUpdate(
       //update Project
@@ -111,40 +146,12 @@ exports.updateProject = async (req, res) => {
     ).populate(populateQuery);
     res.json({ message: STRINGS.TEXTS.ProjectUpdated, newProject });
   } catch (error) {
+    console.log("Error------>", error);
+
     res.status(500).json({ message: error.message });
   }
 };
 
-//get single Project
-
-exports.getSingleProject = async (req, res) => {
-  try {
-    let ProjectId = req.params.id;
-    let project = await Project.findOne({ _id: ProjectId }).populate(
-      populateQuery
-    ); // Check if Project exist
-    if (!project)
-      return res.status(400).send({ message: STRINGS.ERRORS.ProjectNotFound });
-
-    return res.json({ message: STRINGS.TEXTS.ProjectFetched, Project });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-//get all Projects by user
-
-exports.getAllProjectsByUser = async (req, res) => {
-  try {
-    let userId = req.user.id;
-    let user = await User.findById({ _id: userId }).populate(populateQuery); // Check if user exist
-    if (!user)
-      return res.status(400).send({ message: STRINGS.ERRORS.userNotFound });
-    return res.json({ message: STRINGS.TEXTS.ProjectFetched, user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 //delete single Project
 
 exports.deleteProjectByUser = async (req, res) => {
@@ -154,7 +161,7 @@ exports.deleteProjectByUser = async (req, res) => {
 
     let project = await Project.findOne({ _id: ProjectId }); // Check if Project exist
     if (!project)
-      return res.status(400).send({ message: STRINGS.ERRORS.ProjectNotFound });
+      return res.status(404).send({ message: STRINGS.ERRORS.ProjectNotFound });
     await User.findOneAndUpdate(
       //remove Project from user
       {
