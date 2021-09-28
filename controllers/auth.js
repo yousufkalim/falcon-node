@@ -88,7 +88,7 @@ exports.updateProfile = async (req, res) => {
     const data = req.body;
     let userId = req.params.id;
     let uploadedPicture = data.image;
-    if (req.file && req.file) {
+    if (req.file) {
       uploadedPicture = req.file.filename;
     }
     let user = await User.findOneAndUpdate(
