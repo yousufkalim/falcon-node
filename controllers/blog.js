@@ -96,7 +96,7 @@ exports.updateBlog = async (req, res) => {
     let blog = await Blog.findOne({ _id: BlogId }); // Check if Blog exist
     if (!blog)
       return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
-    let uploadedPicture = data.image;
+    let uploadedPicture = req.body.image;
     if (req.file) {
       uploadedPicture = req.file.filename;
     }

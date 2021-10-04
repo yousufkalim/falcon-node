@@ -100,7 +100,7 @@ exports.updateProject = async (req, res) => {
     let project = await Project.findOne({ _id: ProjectId }); // Check if Project exist
     if (!project)
       return res.status(404).send({ message: STRINGS.ERRORS.ProjectNotFound });
-    let uploadedPicture = data.image;
+    let uploadedPicture = req.body.image;
     if (req.file) {
       uploadedPicture = req.file.filename;
     }
