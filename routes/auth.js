@@ -12,13 +12,19 @@ const { upload } = require("../middleware/multer");
 
 // Routes
 // register user
-router.post("/register", upload, registerUserValidator, isValidated, Register);
+router.post(
+  "/register",
+  upload.single("image"),
+  registerUserValidator,
+  isValidated,
+  Register
+);
 // login user
 router.post("/login", loginUserValidator, isValidated, Login);
 // update profile
 router.put(
   "/update/:id",
-  upload,
+  upload.single("image"),
   auth(),
   updateProfileValidator,
   isValidated,

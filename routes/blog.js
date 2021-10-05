@@ -4,7 +4,7 @@ const {
   createBlog,
   updateBlog,
   getSingleBlog,
-  getAllBlogsByUser,
+  getAllBlogs,
   deleteBlogByUser,
 } = require("../controllers/blog.js");
 const {
@@ -16,12 +16,12 @@ const { upload } = require("../middleware/multer");
 // get single Blog
 router.get("/:id", auth(), getSingleBlog);
 // get All Blogs By User
-router.get("/", auth(), getAllBlogsByUser);
+router.get("/", getAllBlogs);
 // create Blog
 router.post(
   "/create",
   auth(),
-  upload,
+  upload.single("image"),
   createBlogValidator,
   isValidated,
   createBlog
@@ -30,7 +30,7 @@ router.post(
 router.put(
   "/update/:id",
   auth(),
-  upload,
+  upload.single("image"),
   createBlogValidator,
   isValidated,
   updateBlog

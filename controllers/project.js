@@ -35,15 +35,12 @@ exports.getSingleProject = async (req, res) => {
   }
 };
 
-//get all Projects by user
+//get all Projects
 
-exports.getAllProjectsByUser = async (req, res) => {
+exports.getAllProjects = async (req, res) => {
   try {
-    let userId = req.user.id;
-    let user = await User.findById({ _id: userId }).populate(populateQuery); // Check if user exist
-    if (!user)
-      return res.status(404).send({ message: STRINGS.ERRORS.userNotFound });
-    return res.json({ message: STRINGS.TEXTS.ProjectFetched, user });
+    let projects = await Project.find({}); // get all Projects
+    return res.json({ message: STRINGS.TEXTS.ProjectFetched, projects });
   } catch (error) {
     console.log("Error------>", error);
 
