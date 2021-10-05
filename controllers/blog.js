@@ -35,15 +35,12 @@ exports.getSingleBlog = async (req, res) => {
   }
 };
 
-//get all Blogs by user
+//get all Blogs
 
-exports.getAllBlogsByUser = async (req, res) => {
+exports.getAllBlogs = async (req, res) => {
   try {
-    let userId = req.user.id;
-    let user = await User.findById({ _id: userId }).populate(populateQuery); // Check if user exist
-    if (!user)
-      return res.status(404).send({ message: STRINGS.ERRORS.userNotFound });
-    return res.json({ message: STRINGS.TEXTS.BlogFetched, user });
+    let blogs = await Blog.find({}); // get all blogs
+    return res.json({ message: STRINGS.TEXTS.BlogFetched, blogs });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -96,7 +93,7 @@ exports.updateBlog = async (req, res) => {
     let blog = await Blog.findOne({ _id: BlogId }); // Check if Blog exist
     if (!blog)
       return res.status(404).send({ message: STRINGS.ERRORS.BlogNotFound });
-    let uploadedPicture = data.image;
+    let uploadedPicture = req.body.image;
     if (req.file) {
       uploadedPicture = req.file.filename;
     }

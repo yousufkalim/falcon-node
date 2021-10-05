@@ -16,6 +16,10 @@ const projectSchema = new Schema({
     type: String,
     trim: true,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model(STRINGS.MODALS.PROJECT, projectSchema);

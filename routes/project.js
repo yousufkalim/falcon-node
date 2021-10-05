@@ -4,7 +4,7 @@ const {
   createProject,
   updateProject,
   getSingleProject,
-  getAllProjectsByUser,
+  getAllProjects,
   deleteProjectByUser,
 } = require("../controllers/project.js");
 const {
@@ -17,12 +17,12 @@ const { upload } = require("../middleware/multer");
 // get single Project
 router.get("/:id", auth(), getSingleProject);
 // get All Projects By User
-router.get("/", auth(), getAllProjectsByUser);
+router.get("/", getAllProjects);
 // create Project
 router.post(
   "/create",
   auth(),
-  upload,
+  upload.single("image"),
   createProjectValidator,
   isValidated,
   createProject
@@ -31,7 +31,7 @@ router.post(
 router.put(
   "/update/:id",
   auth(),
-  upload,
+  upload.single("image"),
   createProjectValidator,
   isValidated,
   updateProject
